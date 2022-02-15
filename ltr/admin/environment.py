@@ -8,23 +8,10 @@ def create_default_local_file():
 
     empty_str = '\'\''
     default_settings = OrderedDict({
-        'workspace_dir': empty_str,
+        'workspace_dir': '/home/dspwjl/workspace/',
         'tensorboard_dir': 'self.workspace_dir + \'/tensorboard/\'',
         'pretrained_networks': 'self.workspace_dir + \'/pretrained_networks/\'',
-        'lasot_dir': empty_str,
-        'got10k_dir': empty_str,
-        'trackingnet_dir': empty_str,
-        'coco_dir': empty_str,
-        'lvis_dir': empty_str,
-        'sbd_dir': empty_str,
-        'imagenet_dir': empty_str,
-        'imagenetdet_dir': empty_str,
-        'ecssd_dir': empty_str,
-        'hkuis_dir': empty_str,
-        'msra10k_dir': empty_str,
-        'davis_dir': empty_str,
-        'youtubevos_dir': empty_str,
-        'lasot_candidate_matching_dataset_path': empty_str})
+        'eotb_dir': '/data/wjl/FE108/'})
 
     comment = {'workspace_dir': 'Base directory for saving network checkpoints.',
                'tensorboard_dir': 'Directory for tensorboard files.'}
