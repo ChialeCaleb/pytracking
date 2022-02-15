@@ -11,7 +11,7 @@ from ltr import MultiGPU
 
 
 def run(settings):
-    settings.description = 'Default train settings for PrDiMP with ResNet18 as backbone.'
+    settings.description = 'Default train settings for PrDiMP18 as backbone to handle event and image.'
     settings.batch_size = 26
     settings.num_workers = 8
     settings.multi_gpu = False

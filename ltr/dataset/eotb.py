@@ -107,12 +107,14 @@ class EOTB(BaseVideoDataset):
         event1 = os.path.join(seq_path, 'inter3_stack', '{:04}_1.jpg'.format(frame_id+1))
         event2 = os.path.join(seq_path, 'inter3_stack', '{:04}_2.jpg'.format(frame_id + 1))
         event3 = os.path.join(seq_path, 'inter3_stack', '{:04}_3.jpg'.format(frame_id + 1))
+        # 注意！此处修改加载事件的数量
         return [self.image_loader(event1), self.image_loader(event2),self.image_loader(event3)]
         # return self.image_loader(os.path.join(seq_path, 'stack_img', '{:04}.jpg'.format(frame_id+1)))
 
     def _get_frames(self, seq_id):
         path = self.coco_set.loadImgs([self.coco_set.anns[self.sequence_list[seq_id]]['image_id']])[0]['file_name']
         img = self.image_loader(os.path.join(self.img_pth, path))
+        # 注意！此处修改加载图片的数量
         return img
 
     def _get_sequence_path(self, seq_id):
