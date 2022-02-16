@@ -12,10 +12,10 @@ from ltr import MultiGPU
 
 def run(settings):
     settings.description = 'Default train settings for PrDiMP18 as backbone to handle event and image.'
-    settings.batch_size = 26
+    settings.batch_size = 64
     settings.num_workers = 8
-    settings.multi_gpu = False
-    settings.print_interval = 1
+    settings.multi_gpu = True
+    settings.print_interval = 5
     settings.normalize_mean = [0.485, 0.456, 0.406]
     settings.normalize_std = [0.229, 0.224, 0.225]
     settings.search_area_factor = 5.0
