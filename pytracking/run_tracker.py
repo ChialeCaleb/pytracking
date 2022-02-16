@@ -29,7 +29,13 @@ def run_tracker(tracker_name, tracker_param, run_id=None, dataset_name='otb', se
 
     dataset = get_dataset(dataset_name)
 
-    if sequence is not None:
+    if sequence == 'train':
+        train_list = [f.strip() for f in open('/home/dspwjl/code/pytracking/ltr/data_specs/eotb_train_split.txt', 'r').readlines()]
+        dataset = [dataset[i] for i in train_list]
+    elif sequence == 'val':
+        val_list = [f.strip() for f in open('/home/dspwjl/code/pytracking/ltr/data_specs/eotb_val_split.txt', 'r').readlines()]
+        dataset = [dataset[i] for i in val_list]
+    elif sequence is not None:
         dataset = [dataset[sequence]]
 
     trackers = [Tracker(tracker_name, tracker_param, run_id)]
