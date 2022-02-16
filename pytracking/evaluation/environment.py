@@ -4,7 +4,7 @@ import os
 
 class EnvSettings:
     def __init__(self):
-        pytracking_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        pytracking_path = '/home/dspwjl/workspace'
 
         self.results_path = '{}/tracking_results/'.format(pytracking_path)
         self.segmentation_path = '{}/segmentation_results/'.format(pytracking_path)
