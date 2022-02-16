@@ -8,10 +8,10 @@ def create_default_local_file():
 
     empty_str = '\'\''
     default_settings = OrderedDict({
-        'workspace_dir': '/home/dspwjl/workspace/',
+        'workspace_dir': '\'/home/dspwjl/workspace/\'',
         'tensorboard_dir': 'self.workspace_dir + \'/tensorboard/\'',
         'pretrained_networks': 'self.workspace_dir + \'/pretrained_networks/\'',
-        'eotb_dir': '/data/wjl/FE108/'})
+        'eotb_dir': '\'/data/wjl/FE108/\''})
 
     comment = {'workspace_dir': 'Base directory for saving network checkpoints.',
                'tensorboard_dir': 'Directory for tensorboard files.'}
