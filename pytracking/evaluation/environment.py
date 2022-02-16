@@ -10,18 +10,7 @@ class EnvSettings:
         self.segmentation_path = '{}/segmentation_results/'.format(pytracking_path)
         self.network_path = '{}/networks/'.format(pytracking_path)
         self.result_plot_path = '{}/result_plots/'.format(pytracking_path)
-        self.otb_path = ''
-        self.nfs_path = ''
-        self.uav_path = ''
-        self.tpl_path = ''
-        self.vot_path = ''
-        self.got10k_path = ''
-        self.lasot_path = ''
-        self.lasot_extension_subset_path = ''
-        self.trackingnet_path = ''
-        self.oxuva_path = ''
-        self.davis_dir = ''
-        self.youtubevos_dir = ''
+        self.eotb_path = '\'/data/wjl/FE108/\''
 
         self.got_packed_results_path = ''
         self.got_reports_path = ''
