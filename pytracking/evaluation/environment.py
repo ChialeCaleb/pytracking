@@ -10,7 +10,7 @@ class EnvSettings:
         self.segmentation_path = '{}/segmentation_results/'.format(pytracking_path)
         self.network_path = '{}/networks/'.format(pytracking_path)
         self.result_plot_path = '{}/result_plots/'.format(pytracking_path)
-        self.eotb_path = '\'/data/wjl/FE108/\''
+        self.eotb_path = '/data/wjl/FE108/'
 
         self.got_packed_results_path = ''
         self.got_reports_path = ''
