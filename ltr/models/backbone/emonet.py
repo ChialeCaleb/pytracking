@@ -82,9 +82,7 @@ class EventMotionNet(nn.Module):
         x1_1, x1_2 = self.ga(x1)
         x2_1, x2_2 = self.ga(x2)
         x3_1, x3_2 = self.ga(x3)
-        x1 = x1_1 + x2_1 + x3_1
-        x2 = x1_2 + x2_2 + x3_2
-        return x1, x2
+        return x1_2, x2_2, x3_2
 
 
 if __name__ == '__main__':

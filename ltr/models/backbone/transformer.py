@@ -71,17 +71,16 @@ class GPT(nn.Module):
     """  the full GPT language model, with a context size of block_size """
 
     def __init__(self, n_embd, n_head, block_exp, n_layer, 
-                    vert_anchors, horz_anchors, seq_len, 
-                    embd_pdrop, attn_pdrop, resid_pdrop, config):
+                    vert_anchors, horz_anchors, event_len, 
+                    embd_pdrop, attn_pdrop, resid_pdrop):
         super().__init__()
         self.n_embd = n_embd
-        self.seq_len = seq_len
+        self.event_len = event_len
         self.vert_anchors = vert_anchors
         self.horz_anchors = horz_anchors
-        self.config = config
 
-        # positional embedding parameter (learnable), image + lidar
-        self.pos_emb = nn.Parameter(torch.zeros(1, (self.config.n_views + 1) * seq_len * vert_anchors * horz_anchors, n_embd))
+        # positional embedding parameter (learnable), image + event
+        self.pos_emb = nn.Parameter(torch.zeros(1, (self.event_len + 1)  * vert_anchors * horz_anchors, n_embd))
         
         # velocity embedding
         self.vel_emb = nn.Linear(1, n_embd)
@@ -95,7 +94,7 @@ class GPT(nn.Module):
         # decoder head
         self.ln_f = nn.LayerNorm(n_embd)
 
-        self.block_size = seq_len
+        self.block_size = 1
         self.apply(self._init_weights)
 
     def get_block_size(self):
@@ -142,37 +141,41 @@ class GPT(nn.Module):
 
         return optim_groups
 
-    def forward(self, image_tensor, lidar_tensor, velocity):
+    def forward(self, image_tensor, event_tensor):
         """
         Args:
-            image_tensor (tensor): B*4*seq_len, C, H, W
-            lidar_tensor (tensor): B*seq_len, C, H, W
+            image_tensor (tensor): B, C, H, W
+            event_tensor (tensor): B*3, C, H, W
             velocity (tensor): ego-velocity
         """
         
-        bz = lidar_tensor.shape[0] // self.seq_len
-        h, w = lidar_tensor.shape[2:4]
+        bz = image_tensor.shape[0]
+        
+        h, w = image_tensor.shape[2:]
         
         # forward the image model for token embeddings
-        image_tensor = image_tensor.view(bz, self.config.n_views * self.seq_len, -1, h, w)
-        lidar_tensor = lidar_tensor.view(bz, self.seq_len, -1, h, w)
+        image_tensor = image_tensor.view(bz, 1, -1, h, w)
+        event_tensor = event_tensor.view(bz, self.event_len, -1, h, w)
+        # print(image_tensor.shape)
+        # print(event_tensor.shape)
 
         # pad token embeddings along number of tokens dimension
-        token_embeddings = torch.cat([image_tensor, lidar_tensor], dim=1).permute(0,1,3,4,2).contiguous()
+        token_embeddings = torch.cat([image_tensor, event_tensor], dim=1).permute(0,1,3,4,2).contiguous()
         token_embeddings = token_embeddings.view(bz, -1, self.n_embd) # (B, an * T, C)
+        # print(self.n_embd)
+        # print(self.pos_emb.shape)
+        # print(token_embeddings.shape)
 
-        # project velocity to n_embed
-        velocity_embeddings = self.vel_emb(velocity.unsqueeze(1)) # (B, C)
 
         # add (learnable) positional embedding and velocity embedding for all tokens
-        x = self.drop(self.pos_emb + token_embeddings + velocity_embeddings.unsqueeze(1)) # (B, an * T, C)
+        x = self.drop(self.pos_emb + token_embeddings ) # (B, an * T, C)
         # x = self.drop(token_embeddings + velocity_embeddings.unsqueeze(1)) # (B, an * T, C)
         x = self.blocks(x) # (B, an * T, C)
         x = self.ln_f(x) # (B, an * T, C)
-        x = x.view(bz, (self.config.n_views + 1) * self.seq_len, self.vert_anchors, self.horz_anchors, self.n_embd)
+        x = x.view(bz, (self.event_len + 1) , self.vert_anchors, self.horz_anchors, self.n_embd)
         x = x.permute(0,1,4,2,3).contiguous() # same as token_embeddings
 
-        image_tensor_out = x[:, :self.config.n_views*self.seq_len, :, :, :].contiguous().view(bz * self.config.n_views * self.seq_len, -1, h, w)
-        lidar_tensor_out = x[:, self.config.n_views*self.seq_len:, :, :, :].contiguous().view(bz * self.seq_len, -1, h, w)
+        image_tensor_out = x[:, :1, :, :, :].contiguous().view(bz, -1, h, w)
+        event_tensor_out = x[:, 1:, :, :, :].contiguous().view(bz * self.event_len, -1, h, w)
         
-        return image_tensor_out, lidar_tensor_out
+        return image_tensor_out, event_tensor_out

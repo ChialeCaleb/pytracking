@@ -12,7 +12,7 @@ from ltr import MultiGPU
 
 def run(settings):
     settings.description = 'Default train settings to handle event and image.'
-    settings.batch_size = 64
+    settings.batch_size = 12
     settings.num_workers = 8
     settings.multi_gpu = True
     settings.print_interval = 5

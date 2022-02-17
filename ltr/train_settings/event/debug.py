@@ -1,7 +1,7 @@
 import torch.optim as optim
 from ltr.dataset import EOTB
 from ltr.data import processing, sampler, LTRLoader
-from ltr.models.tracking import fusionnet
+from ltr.models.tracking import eventnet
 import ltr.models.loss as ltr_losses
 import ltr.models.loss.kl_regression as klreg_losses
 import ltr.actors.tracking as tracking_actors
@@ -12,7 +12,7 @@ from ltr import MultiGPU
 
 def run(settings):
     settings.description = 'Default train settings to handle event and image.'
-    settings.batch_size = 64
+    settings.batch_size = 12
     settings.num_workers = 8
     settings.multi_gpu = True
     settings.print_interval = 5
@@ -91,7 +91,7 @@ def run(settings):
                            shuffle=False, drop_last=True, epoch_interval=5, stack_dim=1)
 
     # Create network and actor
-    net = fusionnet.klceeventnet18(filter_size=settings.target_filter_sz, backbone_pretrained=True, optim_iter=5,
+    net = eventnet.klceeventnet18(filter_size=settings.target_filter_sz, backbone_pretrained=True, optim_iter=5,
                                    clf_feat_norm=True, final_conv=True, optim_init_step=1.0, optim_init_reg=0.05, optim_min_reg=0.05,
                                    gauss_sigma=output_sigma * settings.feature_sz, alpha_eps=0.05, normalize_label=True, init_initializer='zero')
 
