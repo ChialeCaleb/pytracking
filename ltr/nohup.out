@@ -1,0 +1,29 @@
+Training:  event  prdimp18
+No matching checkpoint file found
+Using /home/dspwjl/.cache/torch_extensions as PyTorch extensions root...
+Using /home/dspwjl/.cache/torch_extensions as PyTorch extensions root...
+Using /home/dspwjl/.cache/torch_extensions as PyTorch extensions root...
+Using /home/dspwjl/.cache/torch_extensions as PyTorch extensions root...
+Detected CUDA files, patching ldflags
+Emitting ninja build file /home/dspwjl/.cache/torch_extensions/_prroi_pooling/build.ninja...
+Building extension module _prroi_pooling...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+/home/dspwjl/program/anaconda3/envs/pytracking/lib/python3.7/site-packages/torch/utils/cpp_extension.py:252: UserWarning: 
+
+                               !! WARNING !!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Your compiler (c++) is not compatible with the compiler Pytorch was
+built with for this platform, which is g++ on linux. Please
+use g++ to to compile your extension. Alternatively, you may
+compile PyTorch from source using c++, and then you can also use
+c++ to compile your extension.
+
+See https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md for help
+with compiling PyTorch from source.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                              !! WARNING !!
+
+  platform=sys.platform))
+ninja: no work to do.

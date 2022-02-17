@@ -98,24 +98,27 @@ class EOTB(BaseVideoDataset):
     def get_sequences_in_class(self, class_name):
         return self.seq_per_class[class_name]
 
-    def _get_frame_path(self, seq_path, frame_id):
-        return os.path.join(seq_path, 'img','{:04}.jpg'.format(frame_id+1))
 
+
+    # 注意！此处修改加载上一图像帧
+    def _get_previous_frame(self, seq_path, frame_id):
+
+        previous_frame = os.path.join(seq_path, 'img','{:04}.jpg'.format(frame_id + 1))  # 获取上一帧的图片
+        return self.image_loader(previous_frame)
+
+    # 注意！此处修改加载当前图像帧
     def _get_frame(self, seq_path, frame_id):
-        return self.image_loader(self._get_frame_path(seq_path, frame_id))
+
+        frame = os.path.join(seq_path, 'img','{:04}.jpg'.format(frame_id + 2))  # 获取当前帧的图片
+        return self.image_loader(frame)
+
+    # 注意！此处修改加载事件帧的数量
     def _get_event(self, seq_path, frame_id):
-        event1 = os.path.join(seq_path, 'inter3_stack', '{:04}_1.jpg'.format(frame_id+1))
+        event1 = os.path.join(seq_path, 'inter3_stack', '{:04}_1.jpg'.format(frame_id + 1))
         event2 = os.path.join(seq_path, 'inter3_stack', '{:04}_2.jpg'.format(frame_id + 1))
         event3 = os.path.join(seq_path, 'inter3_stack', '{:04}_3.jpg'.format(frame_id + 1))
-        # 注意！此处修改加载事件的数量
-        return [self.image_loader(event1), self.image_loader(event2),self.image_loader(event3)]
+        return [self.image_loader(event1), self.image_loader(event2),self.image_loader(event3)]     # 获取两帧之间的事件
         # return self.image_loader(os.path.join(seq_path, 'stack_img', '{:04}.jpg'.format(frame_id+1)))
-
-    def _get_frames(self, seq_id):
-        path = self.coco_set.loadImgs([self.coco_set.anns[self.sequence_list[seq_id]]['image_id']])[0]['file_name']
-        img = self.image_loader(os.path.join(self.img_pth, path))
-        # 注意！此处修改加载图片的数量
-        return img
 
     def _get_sequence_path(self, seq_id):
         return os.path.join(self.root, self.sequence_list[seq_id])
@@ -146,6 +149,11 @@ class EOTB(BaseVideoDataset):
         seq_path = self._get_sequence_path(seq_id)
         obj_meta = self.sequence_meta_info[self.sequence_list[seq_id]]
 
+        # frame_ids = [994, 895, 820] 代表一次取 3 帧
+        # print(frame_ids)
+
+
+        previous_frame_list = [self._get_previous_frame(seq_path, f_id) for f_id in frame_ids]
         frame_list = [self._get_frame(seq_path, f_id) for f_id in frame_ids]
         event_list = [self._get_event(seq_path, f_id) for f_id in frame_ids]
         if anno is None:
@@ -155,5 +163,4 @@ class EOTB(BaseVideoDataset):
         for key, value in anno.items():
             anno_frames[key] = [value[f_id, ...].clone() for f_id in frame_ids]
 
-        # return frame_list, anno_frames, obj_meta, event_list
-        return frame_list, anno_frames, obj_meta
+        return previous_frame_list, event_list, frame_list, anno_frames, obj_meta  # 第一个参数和最后一个参数是返回的图片和事件

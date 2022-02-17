@@ -24,6 +24,7 @@ def sample_target(im, target_bb, search_area_factor, output_sz=None, mask=None):
 
     # Crop image
     crop_sz = math.ceil(math.sqrt(w * h) * search_area_factor)
+    print("crop size:",crop_sz)
 
     if crop_sz < 1:
         raise Exception('Too small bounding box.')

@@ -44,14 +44,13 @@ class LTRTrainer(BaseTrainer):
     def cycle_dataset(self, loader):
         """Do a cycle of training or validation."""
 
-        print(loader.name)
 
         self.actor.train(loader.training)
         torch.set_grad_enabled(loader.training)
 
         self._init_timing()
-
-        for i, data in enumerate(loader, 1):  # 对加载某个 dataloader，从 1 开始计数
+        # 对加载某个 dataloader，从 1 开始计数
+        for i, data in enumerate(loader, 1):
             # get inputs
             if self.move_data_to_gpu:
                 data = data.to(self.device)

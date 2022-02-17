@@ -13,8 +13,8 @@ import ltr.models.backbone as backbones
 from ltr import model_constructor
 
 
-class DiMPnet(nn.Module):
-    """The DiMP network.
+class Eventnet(nn.Module):
+    """根据 DiMP 网络修改的
     args:
         feature_extractor:  Backbone feature extractor network. Must return a dict of feature maps
         classifier:  Target classification module.
@@ -98,7 +98,7 @@ class DiMPnet(nn.Module):
 
 
 @model_constructor
-def dimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
+def eventnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
               classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=1,
               clf_feat_norm=True, init_filter_norm=False, final_conv=True,
               out_feature_dim=256, init_gauss_sigma=1.0, num_dist_bins=5, bin_displacement=1.0,
@@ -138,13 +138,13 @@ def dimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0
     bb_regressor = bbmodels.AtomIoUNet(pred_input_dim=iou_input_dim, pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
 
 
 @model_constructor
-def dimpnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
+def eventnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
               classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=0,
               clf_feat_norm=True, init_filter_norm=False, final_conv=True,
               out_feature_dim=512, init_gauss_sigma=1.0, num_dist_bins=5, bin_displacement=1.0,
@@ -193,13 +193,13 @@ def dimpnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0
     bb_regressor = bbmodels.AtomIoUNet(input_dim=(4*128,4*256), pred_input_dim=iou_input_dim, pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
 
 
 @model_constructor
-def dimpnet50_simple(filter_size=1, optim_iter=5, optim_init_reg=0.01,
+def eventnet50_simple(filter_size=1, optim_iter=5, optim_init_reg=0.01,
                      classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=0,
                      clf_feat_norm=True, init_filter_norm=False, final_conv=True,
                      out_feature_dim=512, hinge_threshold=0.05, iou_input_dim=(256, 256), iou_inter_dim=(256, 256),
@@ -247,13 +247,13 @@ def dimpnet50_simple(filter_size=1, optim_iter=5, optim_init_reg=0.01,
                                        pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
 
 
 @model_constructor
-def L2dimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
+def L2eventnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
               classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=1,
               clf_feat_norm=True, init_filter_norm=False, final_conv=True,
               out_feature_dim=256, iou_input_dim=(256, 256), iou_inter_dim=(256, 256),
@@ -287,13 +287,13 @@ def L2dimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg
     bb_regressor = bbmodels.AtomIoUNet(pred_input_dim=iou_input_dim, pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
 
 
 @model_constructor
-def klcedimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
+def klceeventnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
                   classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=1,
                   clf_feat_norm=True, init_filter_norm=False, final_conv=True,
                   out_feature_dim=256, gauss_sigma=1.0,
@@ -340,13 +340,13 @@ def klcedimpnet18(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_r
     bb_regressor = bbmodels.AtomIoUNet(pred_input_dim=iou_input_dim, pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
 
 
 @model_constructor
-def klcedimpnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
+def klceeventnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_reg=0.01,
                   classification_layer='layer3', feat_stride=16, backbone_pretrained=True, clf_feat_blocks=0,
                   clf_feat_norm=True, init_filter_norm=False, final_conv=True,
                   out_feature_dim=512, gauss_sigma=1.0,
@@ -391,6 +391,6 @@ def klcedimpnet50(filter_size=1, optim_iter=5, optim_init_step=1.0, optim_init_r
     bb_regressor = bbmodels.AtomIoUNet(input_dim=(4*128,4*256), pred_input_dim=iou_input_dim, pred_inter_dim=iou_inter_dim)
 
     # DiMP network
-    net = DiMPnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
+    net = Eventnet(feature_extractor=backbone_net, classifier=classifier, bb_regressor=bb_regressor,
                   classification_layer=classification_layer, bb_regressor_layer=['layer2', 'layer3'])
     return net
