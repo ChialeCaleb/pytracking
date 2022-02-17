@@ -31,9 +31,10 @@ class Eventnet(nn.Module):
         self.classification_layer = [classification_layer] if isinstance(classification_layer, str) else classification_layer
         self.bb_regressor_layer = bb_regressor_layer
         self.output_layers = sorted(list(set(self.classification_layer + self.bb_regressor_layer)))
+        self.event_feature_extractor = backbones.EventMotionNet()
 
 
-    def forward(self, train_imgs, test_imgs, train_bb, test_proposals, *args, **kwargs):
+    def forward(self, train_imgs, test_imgs, event_stack, previous_imgs, train_bb, test_proposals, *args, **kwargs):
         """Runs the DiMP network the way it is applied during training.
         The forward function is ONLY used for training. Call the individual functions during tracking.
         args:
@@ -48,10 +49,17 @@ class Eventnet(nn.Module):
 
         assert train_imgs.dim() == 5 and test_imgs.dim() == 5, 'Expect 5 dimensional inputs'
 
+
+
         # Extract backbone features
         train_feat = self.extract_backbone_features(train_imgs.reshape(-1, *train_imgs.shape[-3:]))
         test_feat = self.extract_backbone_features(test_imgs.reshape(-1, *test_imgs.shape[-3:]))
 
+        event_feat1, event_feat2, event_feat3 = self.event_feature_extractor(event_stack[0].reshape(-1, *event_stack[0].shape[-3:]).cuda(),\
+                                                                             event_stack[1].reshape(-1, *event_stack[1].shape[-3:]).cuda(),\
+                                                                             event_stack[2].reshape(-1, *event_stack[2].shape[-3:]).cuda())
+        import pdb
+        pdb.set_trace()
         # Classification features
         train_feat_clf = self.get_backbone_clf_feat(train_feat)
         test_feat_clf = self.get_backbone_clf_feat(test_feat)

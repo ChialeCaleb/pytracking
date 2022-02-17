@@ -195,7 +195,7 @@ class EventProcessing(BaseProcessing):
                 crops_event.append(crops_event_tem)
 
             data[s + '_images'], data[s + '_anno'] = self.transform[s](image=crops, bbox=boxes, joint=False)
-            data[s + '_previous_images'], data[s + '_anno'] = self.transform[s](image=crops, bbox=boxes, joint=False)
+            data[s + '_previous_images'], data[s + '_anno'] = self.transform[s](image=previous_crops, bbox=previous_boxes, joint=False)
             for i in range(len(crops_event)):
                 temp1, _ = self.transform[s](image=crops_event[i], bbox=boxes, joint=False)
                 data[s + '_event_stack'][i] = temp1

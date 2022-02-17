@@ -2,7 +2,7 @@ from . import BaseActor
 import torch
 
 class EventActor(BaseActor):
-    """Actor for training the DiMP network."""
+    """根据 KLDiMPActor 进行修改"""
     def __init__(self, net, objective, loss_weight=None):
         super().__init__(net, objective)
         if loss_weight is None:
@@ -22,8 +22,11 @@ class EventActor(BaseActor):
         # Run network
         target_scores, bb_scores = self.net(train_imgs=data['train_images'],
                                             test_imgs=data['test_images'],
+                                            event_stack=data['test_event_stack'],
+                                            previous_imgs=data['test_previous_images'],
                                             train_bb=data['train_anno'],
-                                            test_proposals=data['test_proposals'])
+                                            test_proposals=data['test_proposals'],
+                                            )
 
         # Reshape bb reg variables
         is_valid = data['test_anno'][:, :, 0] < 99999.0
