@@ -11,7 +11,7 @@ from ltr.models.target_classifier import residual_modules
 import ltr.models.bbreg as bbmodels
 import ltr.models.backbone as backbones
 from ltr import model_constructor
-
+from ltr.models.backbone.event_gru import EventGRU
 
 class Eventnet(nn.Module):
     """根据 DiMP 网络修改的
@@ -32,16 +32,8 @@ class Eventnet(nn.Module):
         self.bb_regressor_layer = bb_regressor_layer
         self.output_layers = sorted(list(set(self.classification_layer + self.bb_regressor_layer)))
         self.event_feature_extractor = backbones.EventMotionNet()
-        self.event_self_attention = backbones.GPT(n_embd=256,
-                                                   n_head=4, 
-                                                   block_exp=4,
-                                                   n_layer=4,
-                                                   vert_anchors=18,
-                                                   horz_anchors=18, 
-                                                   event_len=3, # 3张事件帧融合
-                                                   embd_pdrop=0.1,
-                                                   attn_pdrop=0.1,
-                                                   resid_pdrop=0.1)
+        self.gru_layer2=EventGRU(input_dim=128,hidden_dim=128, event_length=3)
+        self.gru_layer3=EventGRU(input_dim=256,hidden_dim=256, event_length=3)
 
 
     def forward(self, train_imgs, test_imgs, event_stack, previous_imgs, train_bb, test_proposals, *args, **kwargs):
@@ -60,26 +52,22 @@ class Eventnet(nn.Module):
         assert train_imgs.dim() == 5 and test_imgs.dim() == 5, 'Expect 5 dimensional inputs'
 
 
-
         # Extract backbone features
         train_feat = self.extract_backbone_features(train_imgs.reshape(-1, *train_imgs.shape[-3:]))
         test_feat = self.extract_backbone_features(test_imgs.reshape(-1, *test_imgs.shape[-3:]))
-        # previous_feat = self.extract_backbone_features(previous_imgs.reshape(-1, *previous_imgs.shape[-3:]))
+        previous_feat = self.extract_backbone_features(previous_imgs.reshape(-1, *previous_imgs.shape[-3:]))
 
-        event_feat1, event_feat2, event_feat3 = self.event_feature_extractor(event_stack[0].reshape(-1, *event_stack[0].shape[-3:]).cuda(),\
+        event_layer2,event_layer3 = self.event_feature_extractor(event_stack[0].reshape(-1, *event_stack[0].shape[-3:]).cuda(),\
                                                                              event_stack[1].reshape(-1, *event_stack[1].shape[-3:]).cuda(),\
                                                                              event_stack[2].reshape(-1, *event_stack[2].shape[-3:]).cuda())
 
-        event_stack_feat=torch.stack([event_feat1, event_feat2, event_feat3],dim=1)
+        test_feat['layer2'] = test_feat['layer2'] + self.gru_layer2(previous_feat['layer2'], event_layer2)
+        test_feat['layer3'] = test_feat['layer3'] + self.gru_layer3(previous_feat['layer3'], event_layer3)
 
 
         # Classification features
         train_feat_clf = self.get_backbone_clf_feat(train_feat)
         test_feat_clf = self.get_backbone_clf_feat(test_feat)
-
-        test_feat_debug,event_stack_feat = self.event_self_attention(test_feat_clf,event_stack_feat)
-
-        test_feat_clf = test_feat_debug + test_feat_clf
 
         # Run classifier module
         target_scores = self.classifier(train_feat_clf, test_feat_clf, train_bb, *args, **kwargs)
